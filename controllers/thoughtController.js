@@ -1,5 +1,4 @@
-const { ObjectId } = require('mongoose');
-const { Thought, User } = require('../models');
+const { Thought } = require('../models');
 
 //Get all thoughts
 module.exports = {
