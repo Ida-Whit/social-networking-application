@@ -1,4 +1,10 @@
-const { Thought } = require('../models');
+const { Thought, User } = require('../models');
+
+//post create new thought
+    //push created thoughts id to the associated users thoughts array field
+//put to update thought by its id
+//delete thought by its id
+
 
 //Get all thoughts
 module.exports = {
@@ -31,7 +37,14 @@ module.exports = {
     async createThought(req, res) {
         try {
             const thought = await Thought.create(req.body);
-            res.json(thought);
+
+            const user = await User.findOneAndUpdate(
+                req.body.userId,
+                {$addToSet: { thoughts: thought._id}},
+                {runValidators: true, new: true}
+            );
+
+            res.status(200).json(thought, user);
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
@@ -67,6 +80,42 @@ module.exports = {
                 return res.status(404).json({ message: "No thought found with this ID." });
             }
             return res.status(200).json({ message: "Thought deleted successfully." });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(err);
+        }
+    },
+
+//Add reaction
+    async addReaction(req, res) {
+        try {
+            const reaction = await Thought.findOneAndUpdate(
+                {_id: req.params.thoughtId},
+                {$addToSet: {reactions: req.body}},
+                {runValidators: true, new: true}
+            );
+            if(!reaction) {
+                return res.status(404).json({ message: "No user with that ID" });
+            }
+            return res.status(200).json(reaction);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(err);
+        }
+    },
+
+//Delete a reaction
+    async deleteReaction(req, res) {
+        try {
+            const reaction = await Thought.findOneAndUpdate(
+                {_id: req.params.thoughtId},
+                {$pull: {reactions: req.params.reactionsId}},
+                {runValidators: true, new: true}
+            );
+            if(!reaction) {
+                return res.status(404).json({ message: "No user with that ID" });
+            }
+            return res.status(200).json(reaction);
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
