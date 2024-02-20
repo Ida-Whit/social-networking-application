@@ -106,9 +106,9 @@ module.exports = {
                 {runValidators: true, new: true}
             );
             if(!friend) {
-                return res.status(404).json({ message: "Nouser with that ID" });
+                return res.status(404).json({ message: "No user with that ID" });
             }
-            return res.status(200).json(friend);
+            return res.status(200).json({ message: "Friend successfully deleted" });
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);

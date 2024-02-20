@@ -1,13 +1,3 @@
-//Get all thoughts
-//get thought by ID
-//post create new thought
-    //push created thoughts id to the associated users thoughts array field
-//put to update thought by its id
-//delete thought by its id
-
-//post create a reaction stored in a single thoughts reactions array field
-//delete to pull and remove reaction by its id
-
 const router = require('express').Router();
 const {
     getThoughts,
@@ -30,9 +20,8 @@ router
   .put(updateThought)
   .delete(deleteThought);
 
-router
-  .route('/:thoughtId/reactions/reactionId')
-  .post (addReaction)
-  .delete (deleteReaction);
+router.route('/:thoughtId/reactions').post(addReaction);
+
+router.route('/:thoughtId/reactions/:reactionId').delete(deleteReaction);
 
 module.exports = router

@@ -1,11 +1,5 @@
 const { Thought, User } = require('../models');
 
-//post create new thought
-    //push created thoughts id to the associated users thoughts array field
-//put to update thought by its id
-//delete thought by its id
-
-
 //Get all thoughts
 module.exports = {
     async getThoughts(req, res) {
@@ -37,14 +31,14 @@ module.exports = {
     async createThought(req, res) {
         try {
             const thought = await Thought.create(req.body);
-
-            const user = await User.findOneAndUpdate(
+            
+            const user = await User.findByIdAndUpdate(
                 req.body.userId,
                 {$addToSet: { thoughts: thought._id}},
                 {runValidators: true, new: true}
             );
 
-            res.status(200).json(thought, user);
+            res.status(200).json({thought, user});
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
@@ -95,7 +89,7 @@ module.exports = {
                 {runValidators: true, new: true}
             );
             if(!reaction) {
-                return res.status(404).json({ message: "No user with that ID" });
+                return res.status(404).json({ message: "No thought with that ID" });
             }
             return res.status(200).json(reaction);
         } catch (err) {
@@ -108,14 +102,14 @@ module.exports = {
     async deleteReaction(req, res) {
         try {
             const reaction = await Thought.findOneAndUpdate(
-                {_id: req.params.thoughtId},
-                {$pull: {reactions: req.params.reactionsId}},
-                {runValidators: true, new: true}
+                { _id: req.params.thoughtId },
+                { $pull: { reactions: {_id: req.params.reactionId} } },
+                { runValidators: true, new: true }
             );
             if(!reaction) {
-                return res.status(404).json({ message: "No user with that ID" });
+                return res.status(404).json({ message: "No thought with that ID" });
             }
-            return res.status(200).json(reaction);
+            return res.status(200).json({ message: "Reaction Successfully Deleted." });
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
